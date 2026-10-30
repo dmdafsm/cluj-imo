@@ -8,7 +8,16 @@
         (Href: "/", Icon: "dashboard", Text: "Sumar"),
         (Href: "/harta", Icon: "map", Text: "Hartă"),
         (Href: "/autorizatii", Icon: "table_rows", Text: "Explorează"),
+        (Href: "/planificare", Icon: "edit_location_alt", Text: "Planificare"),
+        (Href: "/investitii", Icon: "account_balance", Text: "Investiții"),
+        (Href: "/metropola", Icon: "location_city", Text: "Metropolă"),
         (Href: "/date", Icon: "database", Text: "Date"),
+    };
+    // Material bottom bars hold at most five destinations.
+    var mobileLinks = new[]
+    {
+        links[0], links[1], links[2], links[3],
+        (Href: "/mai-mult", Icon: "more_horiz", Text: "Mai mult"),
     };
 }
 <!DOCTYPE html>
@@ -38,7 +47,7 @@
         }
     </nav>
     <nav class="bottom s">
-        @foreach (var link in links)
+        @foreach (var link in mobileLinks)
         {
             <a href="@link.Href" class="@Active(link.Href)"><i>@link.Icon</i><span>@link.Text</span></a>
         }

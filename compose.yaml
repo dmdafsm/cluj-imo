@@ -13,6 +13,8 @@ services:
       # Street geocoding via OpenStreetMap Nominatim (~1 request/second). Put a contact in the User-Agent.
       Geocoding__Enabled: "true"
       Geocoding__UserAgent: "cluj-imo/1.0 (self-hosted open-data dashboard)"
+      # Extra sources. SICAP downloads large quarterly files; older years are opt-in.
+      Investments__SicapFromYear: "2024"
     restart: unless-stopped
 
 volumes:

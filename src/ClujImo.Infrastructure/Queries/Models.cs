@@ -20,8 +20,6 @@ public sealed record CategoryCount(WorkCategory Category, int Count);
 
 public sealed record AreaCount(string Name, int Count, int NewBuilds, int Units);
 
-public sealed record MapPoint(string Street, double Latitude, double Longitude, int Count, int NewBuilds, int Units, WorkCategory TopCategory, string? Neighborhood);
-
 public sealed record PermitRow(
     int Id,
     PermitKind Kind,

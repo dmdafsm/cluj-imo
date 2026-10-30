@@ -1,0 +1,63 @@
+@model InvestmentsModel
+@{
+    var maxType = Model.WorkTypes.Count > 0 ? Model.WorkTypes.Max(t => t.Total) : 1;
+}
+<div class="grid">
+    <article class="s12 l6 round border">
+        <h6>Constructori cu cele mai mari contracte @(Model.Year is null ? "" : $"({Model.Year})")</h6>
+        <table class="zebra small-text">
+            <thead><tr><th>Firmă</th><th class="num">Contracte</th><th class="num">Valoare</th></tr></thead>
+            <tbody>
+                @foreach (var c in Model.Contractors)
+                {
+                    <tr><td>@c.Name</td><td class="num">@c.Count</td><td class="num">@Format.Compact(c.Total)</td></tr>
+                }
+            </tbody>
+        </table>
+    </article>
+    <article class="s12 l6 round border">
+        <h6>Tipuri de lucrări (cod CPV)</h6>
+        <div class="bars">
+            @foreach (var t in Model.WorkTypes)
+            {
+                <div class="bar-row wide-count">
+                    <span class="name" title="@t.Name">@t.Name</span>
+                    <span class="bar-track"><span class="bar-fill" style="width:@Format.Invariant((double)(100 * t.Total / maxType))%"></span></span>
+                    <span class="count">@Format.Compact(t.Total)</span>
+                </div>
+            }
+        </div>
+    </article>
+    <article class="s12 round border">
+        <h6>Cele mai mari contracte de lucrări</h6>
+        <div class="scroll-x">
+            <table class="zebra small-text">
+                <thead><tr><th>Dată</th><th>Constructor</th><th>Lucrări</th><th>Procedură</th><th class="num">Valoare (lei)</th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model.Largest)
+                    {
+                        <tr>
+                            <td class="nowrap">@Format.Date(c.Date)</td>
+                            <td>@c.Winner</td>
+                            <td>@c.CpvName</td>
+                            <td>@c.Procedure</td>
+                            <td class="num">@(c.Value is { } v ? Format.Number(v) : "—")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </article>
+    <article class="s12 round border">
+        <h6>Cine a încasat plăți pentru lucrări @(Model.Year is null ? "" : $"({Model.Year})")</h6>
+        <table class="zebra small-text">
+            <thead><tr><th>Beneficiar</th><th class="num">Plăți</th><th class="num">Total</th></tr></thead>
+            <tbody>
+                @foreach (var b in Model.PaymentBeneficiaries)
+                {
+                    <tr><td>@b.Name</td><td class="num">@b.Count</td><td class="num">@Format.Lei(b.Total)</td></tr>
+                }
+            </tbody>
+        </table>
+    </article>
+</div>

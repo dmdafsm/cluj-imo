@@ -1,51 +1,42 @@
 using ClujImo.Infrastructure.Ingestion;
-using ClujImo.Infrastructure.Persistence;
 using ClujImo.Infrastructure.Sources;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace ClujImo.Web.Workers;
 
-/// <summary>Refreshes all datasets on start (or when the database is empty), on a schedule, and on demand.</summary>
+/// <summary>
+/// Checks hourly which sources are due (each has its own refresh interval) and runs them; the UI can force a full
+/// refresh. On start, sources that never succeeded are due, so an empty database fills itself.
+/// </summary>
 public sealed class IngestionWorker(
     IServiceScopeFactory scopes,
     IngestionTrigger trigger,
     IOptions<OpenDataOptions> options) : BackgroundService
 {
+    private static readonly TimeSpan CheckInterval = TimeSpan.FromHours(1);
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (options.Value.RefreshOnStartup || await IsEmptyAsync(stoppingToken))
-        {
-            await RunOnceAsync(stoppingToken);
-        }
-
+        var force = options.Value.RefreshOnStartup;
         while (!stoppingToken.IsCancellationRequested)
         {
+            await using (var scope = scopes.CreateAsyncScope())
+            {
+                await scope.ServiceProvider.GetRequiredService<IngestionService>().RunAsync(force, stoppingToken);
+            }
+
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-            timeout.CancelAfter(options.Value.RefreshInterval);
+            timeout.CancelAfter(CheckInterval);
             try
             {
                 await trigger.WaitAsync(timeout.Token);
                 trigger.Consume();
+                force = true;
             }
             catch (OperationCanceledException) when (!stoppingToken.IsCancellationRequested)
             {
-                // Scheduled refresh.
+                force = false;
             }
-
-            await RunOnceAsync(stoppingToken);
         }
-    }
-
-    private async Task RunOnceAsync(CancellationToken cancellationToken)
-    {
-        await using var scope = scopes.CreateAsyncScope();
-        await scope.ServiceProvider.GetRequiredService<IngestionService>().RunAsync(cancellationToken);
-    }
-
-    private async Task<bool> IsEmptyAsync(CancellationToken cancellationToken)
-    {
-        await using var scope = scopes.CreateAsyncScope();
-        return !await scope.ServiceProvider.GetRequiredService<AppDbContext>().Permits.AnyAsync(cancellationToken);
     }
 }

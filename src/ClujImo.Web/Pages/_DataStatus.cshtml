@@ -1,40 +1,52 @@
 @model DataModel
 @{
-    var run = Model.LastRun;
     var geo = Model.Geocoding;
-    var geoPercent = geo.Total > 0 ? 100.0 * (geo.Total - geo.Pending) / geo.Total : 0;
+    var place = Model.Placement;
+    var poll = Model.IsRunning || geo.Pending > 0;
 }
 <article class="round surface-container"
-         @if (Model.IsRunning || geo.Pending > 0) { <text>hx-get="/date" hx-trigger="every 5s" hx-target="#status" hx-swap="innerHTML"</text> }>
+         @if (poll) { <text>hx-get="/date" hx-trigger="every 5s" hx-target="#status" hx-swap="innerHTML"</text> }>
     <nav class="wrap">
         <div class="max">
             <h6 class="no-margin">Actualizare</h6>
             @if (Model.IsRunning)
             {
-                <p class="no-margin"><progress class="circle small"></progress> Se descarcă datele de pe data.gov.ro…</p>
-            }
-            else if (run is null)
-            {
-                <p class="no-margin">Încă nicio actualizare.</p>
+                <p class="no-margin"><progress class="circle small"></progress> Se actualizează sursele…</p>
             }
             else
             {
-                <p class="no-margin">
-                    Ultima: @run.StartedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm", System.Globalization.CultureInfo.GetCultureInfo("ro-RO"))
-                    · @(run.Succeeded ? "reușită" : "eșuată")
-                    · @Format.Number(run.RowsRead) rânduri citite, @Format.Number(run.RowsInserted) noi, @Format.Number(run.RowsUpdated) modificate
-                </p>
-                @if (run.Error is not null)
-                {
-                    <p class="error-text small-text">@run.Error</p>
-                }
+                <p class="no-margin small-text secondary-text">Fiecare sursă se reîmprospătează automat la intervalul ei (zilnic sau săptămânal).</p>
             }
         </div>
         <button class="round" hx-post="/date?handler=Refresh" hx-target="#status" disabled="@Model.IsRunning">
-            <i>sync</i><span>Actualizează acum</span>
+            <i>sync</i><span>Actualizează tot acum</span>
         </button>
     </nav>
+    <div class="scroll-x">
+        <table class="zebra small-text">
+            <thead><tr><th>Sursă</th><th>Ultima rulare</th><th>Stare</th><th class="num">Rânduri</th></tr></thead>
+            <tbody>
+                @foreach (var s in Model.Sources)
+                {
+                    <tr>
+                        <td>@Labels.Source(s.Source)</td>
+                        <td class="nowrap">@Format.DateTime(s.LastRun)</td>
+                        <td>
+                            @if (s.LastSucceeded is null) { <span class="secondary-text">în așteptare</span> }
+                            else if (s.LastSucceeded == true) { <span>reușită</span> }
+                            else { <span class="error-text" title="@s.Error">eșuată</span> }
+                        </td>
+                        <td class="num">@Format.Number(s.Rows)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
     <div class="space"></div>
-    <div class="small-text">Geolocalizare străzi: @geo.Found găsite din @geo.Total folosite (@geo.Pending în așteptare, ~1 pe secundă)</div>
-    <progress value="@Format.Invariant(geoPercent)" max="100" aria-label="Progres geolocalizare"></progress>
+    <div class="small-text">
+        Localizare documente: @Format.Number(place.Placed) din @Format.Number(place.Total) pe hartă,
+        @Format.Number(place.Exact) la adresa exactă din OpenStreetMap.
+        Străzi fără adrese în OSM, geocodate prin Nominatim: @geo.Found din @geo.Total (@geo.Pending în așteptare).
+    </div>
+    <progress value="@Format.Invariant(geo.Total > 0 ? 100.0 * (geo.Total - geo.Pending) / geo.Total : 0)" max="100" aria-label="Progres geolocalizare"></progress>
 </article>

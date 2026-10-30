@@ -31,6 +31,7 @@ nav.left .logo { width: 2.5rem; height: 2.5rem; border-radius: .75rem; }
 
 .bars { display: grid; gap: .5rem; }
 .bar-row { display: grid; grid-template-columns: minmax(8rem, 14rem) 1fr 3.5rem; gap: .75rem; align-items: center; }
+.bar-row.wide-count { grid-template-columns: minmax(8rem, 14rem) 1fr 7rem; }
 .bar-row .bar-track { display: block; height: .75rem; border-radius: .375rem; background: var(--surface-container-highest); overflow: hidden; }
 .bar-row .bar-fill { display: block; height: 100%; border-radius: .375rem; background: var(--primary); }
 .bar-row .bar-fill.muted { background: var(--secondary); }
@@ -61,3 +62,20 @@ tr.clickable { cursor: pointer; }
 
 table.zebra tbody tr:nth-child(even) { background: var(--surface-container-low); }
 table.zebra tbody tr:hover { background: var(--surface-container-high); }
+
+.chart .column.first { fill: var(--primary); }
+.chart .column.second { fill: var(--tertiary); }
+.legend .column-first { background: var(--primary); height: .6rem; width: .6rem; border-radius: 2px; }
+.legend .column-second { background: var(--tertiary); height: .6rem; width: .6rem; border-radius: 2px; }
+.chart .end-label { font-size: 11px; fill: var(--on-surface-variant); }
+.chart .end-label.focus { fill: var(--primary); font-weight: 600; }
+.chart .end-label.previous { fill: var(--tertiary); font-weight: 600; }
+
+.map-legend { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; font-size: .8125rem; color: var(--on-surface-variant); align-items: center; }
+.map-legend .dot { display: inline-block; width: .75rem; height: .75rem; border-radius: 50%; vertical-align: middle; margin-right: .35rem; }
+.map-legend .dot.permit { background: var(--primary); }
+.map-legend .dot.street { background: var(--outline); }
+.map-legend .dot.plan { background: transparent; border: 2px solid var(--tertiary); }
+.map-legend .dot.site { background: var(--secondary); border-radius: 2px; }
+.layer-toggles { display: flex; flex-wrap: wrap; gap: .5rem; }
+.ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 28rem; }

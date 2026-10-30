@@ -1,6 +1,7 @@
 using ClujImo.Infrastructure;
 using ClujImo.Infrastructure.Persistence;
 using ClujImo.Web.Workers;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,12 @@ builder.Services.AddHostedService<IngestionWorker>();
 builder.Services.AddHostedService<GeocodingWorker>();
 builder.Services.AddRazorPages(options => options.Conventions.AddPageRoute("/Dashboard", ""));
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
+
+// Keys survive container restarts, so antiforgery cookies issued before a restart stay valid.
+if (builder.Configuration["DataProtection:KeysPath"] is { Length: > 0 } keysPath)
+{
+    builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(keysPath));
+}
 
 var app = builder.Build();
 

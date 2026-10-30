@@ -4,6 +4,9 @@ public sealed class IngestionRun
 {
     public int Id { get; set; }
 
+    /// <summary>Which source ran: "permits", "osm", "ins", "planning", "payments", "sicap".</summary>
+    public string Source { get; set; } = "permits";
+
     public DateTimeOffset StartedAt { get; set; }
 
     public DateTimeOffset? FinishedAt { get; set; }

@@ -8,11 +8,27 @@
     <link rel="stylesheet" href="~/lib/leaflet-1.9.4/leaflet.css" />
 }
 <h5>Unde se construiește</h5>
-<p class="secondary-text">Fiecare cerc este o stradă: mărimea arată numărul de documente, culoarea plină arată construcții noi. Poziția e la nivel de stradă, nu de imobil.</p>
+<p class="secondary-text">
+    Autorizațiile sunt plasate la adresa exactă când aceasta există în OpenStreetMap, altfel la numărul cel mai apropiat
+    sau pe stradă. Mărimea cercului arată câte documente sunt în același loc.
+</p>
 
 <partial name="_Filters" model="Model" view-data="ViewData" />
 
-<div id="map" class="medium-margin" role="region" aria-label="Hartă cu străzile cu lucrări"></div>
+<div class="layer-toggles medium-margin" role="group" aria-label="Straturi pe hartă">
+    <label class="checkbox"><input type="checkbox" data-layer="permits" checked /><span>Documente filtrate</span></label>
+    <label class="checkbox"><input type="checkbox" data-layer="plans" checked /><span>PUZ/PUD (24 luni)</span></label>
+    <label class="checkbox"><input type="checkbox" data-layer="sites" /><span>Șantiere în OSM</span></label>
+</div>
+
+<div id="map" role="region" aria-label="Hartă cu lucrările"></div>
+<div class="map-legend small-margin" aria-hidden="true">
+    <span><span class="dot permit"></span>construcție nouă</span>
+    <span><span class="dot street"></span>alte lucrări / poziție aproximativă</span>
+    <span><span class="dot plan"></span>plan urbanistic</span>
+    <span><span class="dot site"></span>șantier (OSM)</span>
+</div>
+<script type="application/json" id="map-layers">@Html.Raw(Model.LayersJson)</script>
 <div id="map-data">
     <partial name="_MapResults" model="Model" />
 </div>

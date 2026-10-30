@@ -1,0 +1,78 @@
+@page "/investitii"
+@model InvestmentsModel
+@{
+    ViewData["Title"] = "Investiții publice";
+    var maxYear = Model.ContractYears.Count > 0 ? Model.ContractYears.Max(y => y.Total) : 1;
+}
+<h5>Ce construiește orașul</h5>
+<p class="secondary-text">
+    Investițiile publice ale Primăriei: obiective aprobate în Consiliul Local, contracte de lucrări atribuite prin
+    SICAP și plățile efective către constructori.
+</p>
+
+<div class="grid">
+    <article class="s12 round border">
+        <h6>Contracte de lucrări atribuite, pe ani</h6>
+        @if (Model.ContractYears.Count == 0)
+        {
+            <p class="secondary-text">Contractele SICAP se importă săptămânal (fișiere mari); revino după prima importare.</p>
+        }
+        <div class="bars">
+            @foreach (var y in Model.ContractYears)
+            {
+                <div class="bar-row wide-count">
+                    <span class="name">@y.Year <span class="secondary-text small-text">· @y.Count contracte</span></span>
+                    <span class="bar-track"><span class="bar-fill" style="width:@Format.Invariant((double)(100 * y.Total / maxYear))%"></span></span>
+                    <span class="count">@Format.Compact(y.Total)</span>
+                </div>
+            }
+        </div>
+        <p class="small-text secondary-text">Valori în lei, fără TVA, din anunțurile de atribuire (proceduri cu anunț; achizițiile directe nu sunt incluse).</p>
+    </article>
+    <article class="s12 round border">
+        <h6>Plăți pentru lucrări, pe luni</h6>
+        @if (Model.Payments is not null)
+        {
+            <partial name="_ColumnChart" model="Model.Payments" />
+        }
+        <p class="small-text secondary-text">Plăți identificate după descriere (lucrări, modernizări, reabilitări, construcții).</p>
+    </article>
+</div>
+
+<form class="filters" hx-get="/investitii" hx-target="#results" hx-push-url="true" hx-trigger="change" hx-indicator="#results">
+    <div class="field label suffix border round small">
+        <select name="an" id="an-inv">
+            <option value="" selected="@(Model.Year is null)">Toți anii</option>
+            @foreach (var y in Model.Years)
+            {
+                <option value="@y" selected="@(Model.Year == y)">@y</option>
+            }
+        </select>
+        <label for="an-inv">An</label>
+        <i>arrow_drop_down</i>
+    </div>
+</form>
+
+<div id="results" class="dim">
+    <partial name="_InvestmentsResults" model="Model" />
+</div>
+
+@if (Model.Decisions.Count > 0)
+{
+    <article class="round border">
+        <h6>Obiective de investiții aprobate recent în Consiliul Local</h6>
+        <ul class="list border">
+            @foreach (var d in Model.Decisions)
+            {
+                <li>
+                    <i>account_balance</i>
+                    <div class="max">
+                        <a class="link" href="@d.Url" target="_blank" rel="noopener">HCL @d.Number/@d.Year</a>
+                        <span class="small-text secondary-text"> · @Format.Date(d.Date)</span>
+                        <div class="small-text">@d.Title</div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </article>
+}

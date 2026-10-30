@@ -1,0 +1,9 @@
+{"version":0.6,"elements":[
+{"type":"node","id":1,"lat":46.7701,"lon":23.6201,"tags":{"addr:street":"Strada Albert Einstein","addr:housenumber":"16"}},
+{"type":"way","id":2,"center":{"lat":46.7702,"lon":23.6204},"tags":{"addr:street":"Strada Albert Einstein","addr:housenumber":"20;22"}},
+{"type":"node","id":3,"lat":46.77,"lon":23.62,"tags":{"amenity":"cafe"}},
+{"type":"way","id":10,"tags":{"place":"suburb","name":"Gheorgheni"},"geometry":[{"lat":46.76,"lon":23.61},{"lat":46.78,"lon":23.61},{"lat":46.78,"lon":23.63},{"lat":46.76,"lon":23.63},{"lat":46.76,"lon":23.61}]},
+{"type":"node","id":11,"lat":46.77,"lon":23.62,"tags":{"place":"suburb","name":"Gheorgheni"}},
+{"type":"node","id":12,"lat":46.79,"lon":23.65,"tags":{"place":"neighbourhood","name":"Micro 1"}},
+{"type":"way","id":20,"center":{"lat":46.75,"lon":23.60},"tags":{"landuse":"construction","construction":"apartments","name":"Ansamblu X"}}
+]}

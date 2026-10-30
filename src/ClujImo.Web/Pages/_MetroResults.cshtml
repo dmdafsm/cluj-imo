@@ -1,0 +1,47 @@
+@model MetroModel
+@{
+    var ro = System.Globalization.CultureInfo.GetCultureInfo("ro-RO");
+}
+@if (Model.Chart is null)
+{
+    <article class="round border"><p class="secondary-text">Datele INS nu au fost încă importate. Vezi pagina Date.</p></article>
+}
+else
+{
+    @if (Model.ClujShare is { } share)
+    {
+        <article class="round primary-container padding">
+            <p class="no-margin">
+                În @Model.LatestYear, Cluj-Napoca a avut <strong>@share.ToString("P0", ro)</strong> din totalul județului la „@Labels.For(Model.Indicator).ToLowerInvariant()”
+                @if (Model.ClujShareFiveYearsAgo is { } before)
+                {
+                    <span>(față de @before.ToString("P0", ro) în @(Model.LatestYear - 5))</span>
+                }
+            </p>
+        </article>
+    }
+    <article class="round border">
+        <h6>@Labels.For(Model.Indicator) pe ani</h6>
+        <partial name="_YearLineChart" model="Model.Chart" />
+    </article>
+    <article class="round border">
+        <h6>Localitățile județului, ultimii 5 ani</h6>
+        <div class="scroll-x">
+            <table class="zebra small-text">
+                <thead><tr><th>Localitate</th><th class="num">@Model.LatestYear</th><th class="num">@(Model.LatestYear - 4)–@Model.LatestYear</th><th class="num">Pondere în județ</th><th class="num">@(Model.LatestYear - 5)</th></tr></thead>
+                <tbody>
+                    @foreach (var r in Model.Rows)
+                    {
+                        <tr>
+                            <td>@r.Locality</td>
+                            <td class="num">@Format.Compact(r.Latest)</td>
+                            <td class="num">@Format.Compact(r.LastFiveYears)</td>
+                            <td class="num">@r.Share.ToString("P1", ro)</td>
+                            <td class="num">@Format.Compact(r.FiveYearsBefore)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </article>
+}
