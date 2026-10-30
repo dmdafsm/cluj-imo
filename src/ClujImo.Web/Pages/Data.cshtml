@@ -16,7 +16,10 @@
         <li><i>draft</i><div class="max"><a class="link" href="https://data.gov.ro/dataset/certificate_urbanism" target="_blank" rel="noopener">Certificate de urbanism</a><div class="small-text secondary-text">Intenția: primul pas înainte de proiect și autorizație.</div></div></li>
         <li><i>task_alt</i><div class="max"><a class="link" href="https://data.gov.ro/dataset/certificat_atestare" target="_blank" rel="noopener">Certificate de atestare a edificării</a><div class="small-text secondary-text">Construcții terminate. În anii recenți setul conține doar cartierul, nu adresa.</div></div></li>
         <li><i>signpost</i><div class="max"><a class="link" href="https://data.gov.ro/dataset/nomenclatorul-stradal-al-municipiului-cluj-napoca" target="_blank" rel="noopener">Nomenclatorul stradal</a><div class="small-text secondary-text">Numele oficiale și zona fiscală a străzilor.</div></div></li>
-        <li><i>public</i><div class="max"><a class="link" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap / Nominatim</a><div class="small-text secondary-text">Coordonate și cartier pentru fiecare stradă (nu pentru fiecare imobil).</div></div></li>
+        <li><i>public</i><div class="max"><a class="link" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a><div class="small-text secondary-text">Adrese (pentru poziția exactă), contururile cartierelor și zonele marcate ca șantier; Nominatim pentru străzile fără adrese.</div></div></li>
+        <li><i>edit_location_alt</i><div class="max"><a class="link" href="https://primariaclujnapoca.ro/strategii-urbane/informarea-si-consultarea-publicului-pud-si-puz/" target="_blank" rel="noopener">Anunțuri de intenție PUZ/PUD</a> și <a class="link" href="https://primariaclujnapoca.ro/consiliu-local/hotarari-de-consiliu/" target="_blank" rel="noopener">hotărârile Consiliului Local</a><div class="small-text secondary-text">Planuri depuse și aprobate, obiective de investiții. Numele persoanelor fizice nu sunt păstrate.</div></div></li>
+        <li><i>query_stats</i><div class="max"><a class="link" href="http://statistici.insse.ro:8077/tempo-online/" target="_blank" rel="noopener">INS TEMPO</a><div class="small-text secondary-text">LOC104B locuințe terminate, LOC108B autorizații, LOC101B fond locativ, pe localități.</div></div></li>
+        <li><i>payments</i><div class="max"><a class="link" href="https://data.gov.ro/dataset/situatie_plati" target="_blank" rel="noopener">Plățile Primăriei</a> și <a class="link" href="https://data.gov.ro/organization/agentia-pentru-agenda-digitala-a-romaniei" target="_blank" rel="noopener">contractele SICAP</a><div class="small-text secondary-text">Contracte atribuite de Municipiul Cluj-Napoca (CUI 4305857) și plăți pentru lucrări.</div></div></li>
     </ul>
 </article>
 
@@ -27,7 +30,9 @@
     <ul>
         <li>Clasificarea se face pe baza textului descrierii, cu reguli; poate greși pe descrieri neobișnuite.</li>
         <li>Numărul de unități și regimul de înălțime apar doar când sunt scrise în descriere.</li>
-        <li>Seturile nu conțin suprafețe, valori de investiție sau beneficiari.</li>
+        <li>Seturile de autorizații nu conțin suprafețe, valori de investiție sau beneficiari.</li>
+        <li>Anunțurile PUZ/PUD sunt citite din PDF-uri; un format nou al tabelului poate necesita ajustarea parserului.</li>
+        <li>Plățile „pentru lucrări” sunt identificate după descriere și pot include și altceva.</li>
         <li>Anul curent e incomplet; comparațiile folosesc aceeași perioadă din anul anterior.</li>
     </ul>
 </article>

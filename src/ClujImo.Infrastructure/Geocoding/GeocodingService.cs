@@ -41,9 +41,20 @@ public sealed partial class GeocodingService(
                 street.GeocodedAt = time.GetUtcNow();
                 await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+                // Until the next full enrichment, permits on this street at least get the street's position.
+                if (result is not null)
+                {
+                    await db.Permits.Where(p => p.StreetKey == key && p.Latitude == null)
+                        .ExecuteUpdateAsync(s => s
+                            .SetProperty(p => p.Latitude, result.Latitude)
+                            .SetProperty(p => p.Longitude, result.Longitude)
+                            .SetProperty(p => p.GeoPrecision, ClujImo.Domain.Geo.GeoPrecision.Street), cancellationToken)
+                        .ConfigureAwait(false);
+                }
+
                 if (result?.Neighborhood is { } neighborhood)
                 {
-                    await db.Permits.Where(p => p.StreetKey == key)
+                    await db.Permits.Where(p => p.StreetKey == key && p.Neighborhood == null)
                         .ExecuteUpdateAsync(s => s.SetProperty(p => p.Neighborhood, neighborhood), cancellationToken)
                         .ConfigureAwait(false);
                 }

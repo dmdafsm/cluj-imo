@@ -32,6 +32,19 @@ public sealed partial class CkanClient(HttpClient http)
     public Task<byte[]> DownloadAsync(Uri url, CancellationToken cancellationToken) =>
         http.GetByteArrayAsync(url, cancellationToken);
 
+    /// <summary>True when the dataset exists; CKAN answers 404 for unknown ids.</summary>
+    public async Task<IReadOnlyList<CkanResource>?> TryGetResourcesAsync(string datasetId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await GetResourcesAsync(datasetId, cancellationToken).ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+    }
+
     [GeneratedRegex(@"\b20\d{2}\b")]
     private static partial Regex YearPattern();
 

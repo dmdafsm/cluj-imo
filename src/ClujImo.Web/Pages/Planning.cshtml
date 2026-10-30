@@ -1,0 +1,96 @@
+@page "/planificare"
+@model PlanningModel
+@using ClujImo.Domain.Planning
+@{
+    ViewData["Title"] = "Planificare";
+}
+<h5>Ce se pregătește</h5>
+<p class="secondary-text">
+    Planurile urbanistice (PUZ pentru zone întregi, PUD pentru una sau câteva parcele) apar cu luni sau ani înaintea
+    autorizațiilor de construire. Anunțurile de intenție arată ce s-a depus, hotărârile de consiliu ce s-a aprobat.
+</p>
+
+<div class="grid">
+    <article class="s6 m4 kpi round primary-container">
+        <div class="label small-text">PUZ depuse, ultimele 12 luni</div>
+        <div class="value">@Model.LastYear.Puz</div>
+    </article>
+    <article class="s6 m4 kpi round surface-container">
+        <div class="label small-text">PUD depuse, ultimele 12 luni</div>
+        <div class="value">@Model.LastYear.Pud</div>
+    </article>
+    <article class="s12 m4 kpi round surface-container">
+        <div class="label small-text">Planuri aprobate prin HCL, ultimele 12 luni</div>
+        <div class="value">@Model.LastYear.Approved</div>
+    </article>
+</div>
+
+<div class="grid">
+    <article class="s12 round border">
+        <h6>Anunțuri de intenție pe luni</h6>
+        <partial name="_ColumnChart" model="Model.Intents" />
+    </article>
+    <article class="s12 round border">
+        <h6>Aprobări în Consiliul Local pe luni</h6>
+        <partial name="_ColumnChart" model="Model.Approvals" />
+    </article>
+</div>
+
+@if (Model.Neighborhoods.Count > 0)
+{
+    <article class="round border">
+        <h6>Unde se pregătesc cele mai multe planuri (12 luni)</h6>
+        @{ var max = Model.Neighborhoods.Max(n => n.Count); }
+        <div class="bars">
+            @foreach (var n in Model.Neighborhoods)
+            {
+                <div class="bar-row wide-count">
+                    <span class="name"><a class="link" href="/planificare?cartier=@Uri.EscapeDataString(n.Name)">@n.Name</a></span>
+                    <span class="bar-track"><span class="bar-fill" style="width:@Format.Invariant(100.0 * n.Count / max)%"></span></span>
+                    <span class="count">@n.Count <span class="secondary-text small-text">· @((int)n.Total) PUZ</span></span>
+                </div>
+            }
+        </div>
+    </article>
+}
+
+<form class="filters" hx-get="/planificare" hx-target="#results" hx-push-url="true" hx-trigger="change" hx-indicator="#results">
+    <div class="field label suffix border round small">
+        <select name="etapa" id="etapa">
+            <option value="" selected="@(Model.Stage is null)">Toate etapele</option>
+            @foreach (var s in Enum.GetValues<UrbanPlanStage>())
+            {
+                <option value="@s" selected="@(Model.Stage == s)">@Labels.For(s)</option>
+            }
+        </select>
+        <label for="etapa">Etapă</label>
+        <i>arrow_drop_down</i>
+    </div>
+    <div class="field label suffix border round small">
+        <select name="tip" id="tip-plan">
+            <option value="" selected="@(Model.Kind is null)">PUZ și PUD</option>
+            @foreach (var k in Enum.GetValues<UrbanPlanKind>())
+            {
+                <option value="@k" selected="@(Model.Kind == k)">@Labels.For(k)</option>
+            }
+        </select>
+        <label for="tip-plan">Tip</label>
+        <i>arrow_drop_down</i>
+    </div>
+    <div class="field label suffix border round small">
+        <select name="an" id="an-plan">
+            <option value="" selected="@(Model.Year is null)">Toți anii</option>
+            @foreach (var y in Model.Years)
+            {
+                <option value="@y" selected="@(Model.Year == y)">@y</option>
+            }
+        </select>
+        <label for="an-plan">An</label>
+        <i>arrow_drop_down</i>
+    </div>
+    <input type="hidden" name="cartier" value="@Model.Neighborhood" />
+</form>
+
+<div id="results" class="dim">
+    <partial name="_PlanningResults" model="Model" />
+</div>

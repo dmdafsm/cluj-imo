@@ -86,5 +86,47 @@ public static class Labels
         _ => group.ToString(),
     };
 
+    public static string For(ClujImo.Domain.Planning.UrbanPlanStage stage) => stage switch
+    {
+        ClujImo.Domain.Planning.UrbanPlanStage.Intent => "Anunț de intenție",
+        ClujImo.Domain.Planning.UrbanPlanStage.Approved => "Aprobat HCL",
+        _ => stage.ToString(),
+    };
+
+    public static string For(ClujImo.Domain.Planning.UrbanPlanKind kind) => kind switch
+    {
+        ClujImo.Domain.Planning.UrbanPlanKind.Puz => "PUZ",
+        ClujImo.Domain.Planning.UrbanPlanKind.Pud => "PUD",
+        _ => kind.ToString(),
+    };
+
+    public static string For(ClujImo.Domain.Statistics.MetroIndicator indicator) => indicator switch
+    {
+        ClujImo.Domain.Statistics.MetroIndicator.DwellingsCompleted => "Locuințe terminate",
+        ClujImo.Domain.Statistics.MetroIndicator.ResidentialPermits => "Autorizații pentru clădiri rezidențiale",
+        ClujImo.Domain.Statistics.MetroIndicator.ResidentialPermitArea => "Suprafață utilă autorizată (m²)",
+        ClujImo.Domain.Statistics.MetroIndicator.DwellingStock => "Fond locativ (locuințe existente)",
+        _ => indicator.ToString(),
+    };
+
+    public static string Source(string source) => source switch
+    {
+        "permits" => "Autorizații, certificate, nomenclator (data.gov.ro)",
+        "osm" => "OpenStreetMap: adrese, cartiere, șantiere",
+        "planning" => "PUZ/PUD și hotărâri de consiliu (primariaclujnapoca.ro)",
+        "ins" => "INS TEMPO: statistici pe localități",
+        "payments" => "Plățile primăriei (data.gov.ro)",
+        "sicap" => "Contracte de achiziții publice (SICAP)",
+        _ => source,
+    };
+
+    public static string For(ClujImo.Domain.Geo.GeoPrecision precision) => precision switch
+    {
+        ClujImo.Domain.Geo.GeoPrecision.Address => "adresă exactă",
+        ClujImo.Domain.Geo.GeoPrecision.NearbyNumber => "număr apropiat",
+        ClujImo.Domain.Geo.GeoPrecision.Street => "nivel de stradă",
+        _ => "nelocalizat",
+    };
+
     public static readonly string[] Months = ["ian", "feb", "mar", "apr", "mai", "iun", "iul", "aug", "sep", "oct", "nov", "dec"];
 }

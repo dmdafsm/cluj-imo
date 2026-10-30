@@ -1,0 +1,28 @@
+@page "/metropola"
+@model MetroModel
+@using ClujImo.Domain.Statistics
+@{
+    ViewData["Title"] = "Zona metropolitană";
+}
+<h5>Cluj-Napoca și împrejurimile</h5>
+<p class="secondary-text">
+    O mare parte din locuințele „clujene” se construiesc în comunele din jur, mai ales în Florești. Datele vin de la
+    INS (TEMPO) pentru toate localitățile județului; ultimul an publicat e de obicei anul trecut.
+</p>
+
+<form class="filters" hx-get="/metropola" hx-target="#results" hx-push-url="true" hx-trigger="change" hx-indicator="#results">
+    <div class="field label suffix border round small">
+        <select name="indicator" id="indicator">
+            @foreach (var i in Enum.GetValues<MetroIndicator>())
+            {
+                <option value="@i" selected="@(Model.Indicator == i)">@Labels.For(i)</option>
+            }
+        </select>
+        <label for="indicator">Indicator</label>
+        <i>arrow_drop_down</i>
+    </div>
+</form>
+
+<div id="results" class="dim">
+    <partial name="_MetroResults" model="Model" />
+</div>

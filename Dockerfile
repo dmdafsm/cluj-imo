@@ -20,7 +20,8 @@ RUN dotnet build ClujImo.slnx -c Release --no-restore \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 ENV ASPNETCORE_HTTP_PORTS=8080 \
-    ConnectionStrings__Default="Data Source=/data/cluj-imo.db"
+    ConnectionStrings__Default="Data Source=/data/cluj-imo.db" \
+    DataProtection__KeysPath=/data/keys
 RUN mkdir /data && chown "$APP_UID" /data
 COPY --from=build /app .
 USER $APP_UID

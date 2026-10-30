@@ -19,6 +19,7 @@ certificates / atestare, street nomenclator), classifies and geolocates them, an
 | Design system | **Material Design 3 via Beer CSS** (no custom component library) |
 | JavaScript | Only where HTML cannot do it (the Leaflet map). No bundler, no npm at build time |
 | Storage | SQLite through EF Core, file on a Docker volume |
+| Parsing | PdfPig (PDF tables), ExcelDataReader (SICAP xls/xlsx/csv), own ODS reader |
 | Tests | xUnit v3 |
 | Delivery | Single Docker image, `docker compose up` |
 
@@ -71,6 +72,20 @@ permit is classified) lives anywhere but Domain, it is in the wrong place.
 - External services are polite: Nominatim max 1 request/second, identifying
   `User-Agent`, results cached forever in the `Streets` table. Geocoding can be turned
   off with `Geocoding:Enabled=false`.
+- **Every source is an `ISourceIngester`** with its own name, refresh interval and on/off
+  switch. The orchestrator records one `IngestionRun` per source; one failing source never
+  blocks the others. Enrichment (classification, placement, neighborhoods) runs once after
+  all due sources, over all tables.
+- Snapshots that replace data (OSM) check that the new snapshot is sane before deleting the
+  old one. Large immutable files (SICAP quarters, monthly PDFs) are recorded in
+  `ProcessedResources` and never downloaded twice.
+- Scraped sources (city hall site, PDFs) are parsed by pure functions over HTML or positioned
+  words, so tests run on saved fixtures. A format change must fail loudly (exception, failed
+  run), not silently import nothing.
+- **Privacy.** The app is about what gets built, not about individuals. Names of private
+  persons (applicants, plan initiators, payment beneficiaries) are never stored: run them
+  through `PartyName.Display`, which keeps organizations and returns "Persoană fizică"
+  otherwise. Fixtures committed to the repo contain no real personal names.
 - Schema changes go through EF Core migrations (`dotnet ef migrations add <Name>`
   from the repo root, see README). Migrations apply on startup.
 

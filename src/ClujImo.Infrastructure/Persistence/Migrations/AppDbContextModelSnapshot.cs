@@ -63,6 +63,186 @@ namespace ClujImo.Infrastructure.Persistence.Migrations
                     b.ToTable("Streets");
                 });
 
+            modelBuilder.Entity("ClujImo.Domain.Geo.ConstructionSite", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Building")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Neighborhood")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConstructionSites");
+                });
+
+            modelBuilder.Entity("ClujImo.Domain.Geo.NeighborhoodArea", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("CenterLatitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("CenterLongitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("RingsJson")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("Neighborhoods");
+                });
+
+            modelBuilder.Entity("ClujImo.Domain.Geo.OsmAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("HouseNumber")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("StreetKey")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreetKey");
+
+                    b.ToTable("OsmAddresses");
+                });
+
+            modelBuilder.Entity("ClujImo.Domain.Investments.PublicContract", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Authority")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AuthorityCui")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AwardNoticeNumber")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly?>("ContractDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContractNumber")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContractType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CpvCode")
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CpvName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Lot")
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Procedure")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("ValueRon")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Winner")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WinnerCui")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractDate");
+
+                    b.HasIndex("ContractNumber", "AwardNoticeNumber", "Lot")
+                        .IsUnique();
+
+                    b.ToTable("PublicContracts");
+                });
+
+            modelBuilder.Entity("ClujImo.Domain.Investments.PublicPayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Beneficiary")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsWorks")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("RowKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("RowKey")
+                        .IsUnique();
+
+                    b.ToTable("PublicPayments");
+                });
+
             modelBuilder.Entity("ClujImo.Domain.Permits.Permit", b =>
                 {
                     b.Property<int>("Id")
@@ -75,6 +255,9 @@ namespace ClujImo.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("GeoPrecision")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("HeightRegime")
                         .HasMaxLength(64)
@@ -108,8 +291,14 @@ namespace ClujImo.Infrastructure.Persistence.Migrations
                     b.Property<int>("Kind")
                         .HasColumnType("INTEGER");
 
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("REAL");
+
                     b.Property<int?>("LevelsAboveGround")
                         .HasColumnType("INTEGER");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("Neighborhood")
                         .HasMaxLength(128)
@@ -165,10 +354,152 @@ namespace ClujImo.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("StreetKey");
 
+                    b.HasIndex("Latitude", "Longitude");
+
                     b.HasIndex("Kind", "Year", "Number")
                         .IsUnique();
 
                     b.ToTable("Permits");
+                });
+
+            modelBuilder.Entity("ClujImo.Domain.Planning.CouncilDecision", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly?>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Topic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Topic");
+
+                    b.HasIndex("Year", "Number")
+                        .IsUnique();
+
+                    b.ToTable("CouncilDecisions");
+                });
+
+            modelBuilder.Entity("ClujImo.Domain.Planning.UrbanPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly?>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("GeoPrecision")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("HouseNumber")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Initiator")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Neighborhood")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SourceUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Stage")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("StreetDisplay")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StreetKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("Stage", "Reference")
+                        .IsUnique();
+
+                    b.ToTable("UrbanPlans");
+                });
+
+            modelBuilder.Entity("ClujImo.Domain.Statistics.MetroStat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Indicator")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Locality")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Siruta")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Indicator", "Siruta", "Year")
+                        .IsUnique();
+
+                    b.ToTable("MetroStats");
                 });
 
             modelBuilder.Entity("ClujImo.Infrastructure.Persistence.IngestionRun", b =>
@@ -192,6 +523,11 @@ namespace ClujImo.Infrastructure.Persistence.Migrations
                     b.Property<int>("RowsUpdated")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("StartedAt")
                         .HasColumnType("TEXT");
 
@@ -200,7 +536,30 @@ namespace ClujImo.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Source", "Id");
+
                     b.ToTable("IngestionRuns");
+                });
+
+            modelBuilder.Entity("ClujImo.Infrastructure.Persistence.ProcessedResource", b =>
+                {
+                    b.Property<string>("Url")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ProcessedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Rows")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Url");
+
+                    b.ToTable("ProcessedResources");
                 });
 #pragma warning restore 612, 618
         }

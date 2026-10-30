@@ -1,0 +1,21 @@
+@model YearLineChart
+<svg class="chart" viewBox="0 0 @YearLineChart.Width @YearLineChart.Height" role="img" aria-label="Evoluție anuală pe localități">
+    @foreach (var (y, value) in Model.GridLines)
+    {
+        <g>
+            <line class="grid-line" x1="@YearLineChart.Left" x2="@(YearLineChart.Width - YearLineChart.Right)" y1="@Format.Invariant(y)" y2="@Format.Invariant(y)" />
+            <text class="axis-label" x="@(YearLineChart.Left - 6)" y="@Format.Invariant(y + 4)" text-anchor="end">@Format.Compact((int)value)</text>
+        </g>
+    }
+    @foreach (var year in Model.Years.Where(y => y % 5 == 0 || y == Model.Years[^1]))
+    {
+        <g><text class="axis-label" x="@Format.Invariant(Model.X(year))" y="@(YearLineChart.Height - 8)" text-anchor="middle">@year</text></g>
+    }
+    @foreach (var line in Model.Lines.OrderBy(l => l.Role == "focus" ? 2 : l.Role == "previous" ? 1 : 0))
+    {
+        <g>
+            <path class="series @line.Role" d="@line.Path"><title>@line.Name</title></path>
+            <text class="end-label @line.Role" x="@(YearLineChart.Width - YearLineChart.Right + 6)" y="@Format.Invariant(line.LabelY + 4)">@line.Name</text>
+        </g>
+    }
+</svg>

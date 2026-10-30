@@ -1,0 +1,42 @@
+@model PlanningModel
+@{
+    var r = Model.Plans;
+}
+<p class="small-text secondary-text">
+    @Format.Number(r.TotalCount) planuri @(string.IsNullOrEmpty(Model.Neighborhood) ? "" : $"în {Model.Neighborhood}") · pagina @r.PageNumber din @r.PageCount
+    @if (!string.IsNullOrEmpty(Model.Neighborhood))
+    {
+        <a class="link" href="/planificare">· tot orașul</a>
+    }
+</p>
+<div class="scroll-x">
+    <table class="zebra small-text">
+        <thead><tr><th>Dată</th><th>Plan</th><th>Inițiator</th><th>Cartier</th><th>Sursă</th></tr></thead>
+        <tbody>
+            @foreach (var p in r.Items)
+            {
+                <tr>
+                    <td class="nowrap">@Format.Date(p.Date)</td>
+                    <td>
+                        <span class="chip tiny round @(p.Stage == ClujImo.Domain.Planning.UrbanPlanStage.Approved ? "primary-container" : "")">@Labels.For(p.Kind) · @Labels.For(p.Stage)</span>
+                        <div>@p.Title</div>
+                    </td>
+                    <td>@(p.Initiator ?? "—")</td>
+                    <td>@(p.Neighborhood ?? "—")</td>
+                    <td class="nowrap">
+                        @if (p.SourceUrl is not null)
+                        {
+                            <a class="link" href="@p.SourceUrl" target="_blank" rel="noopener">@(p.Stage == ClujImo.Domain.Planning.UrbanPlanStage.Approved ? $"HCL {p.Reference}" : $"nr. {p.Reference}")</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<nav class="center-align medium-margin">
+    <button class="border round" disabled="@(!r.HasPrevious)" hx-get="@Model.PageUrl(r.PageNumber - 1)" hx-target="#results" hx-push-url="true" aria-label="Pagina anterioară"><i>chevron_left</i></button>
+    <span>@r.PageNumber / @r.PageCount</span>
+    <button class="border round" disabled="@(!r.HasNext)" hx-get="@Model.PageUrl(r.PageNumber + 1)" hx-target="#results" hx-push-url="true" aria-label="Pagina următoare"><i>chevron_right</i></button>
+</nav>
+<p class="small-text secondary-text">Numele persoanelor fizice care inițiază planuri nu sunt afișate.</p>

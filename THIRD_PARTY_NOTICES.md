@@ -10,13 +10,26 @@
 | [htmx](https://github.com/bigskysoftware/htmx) | 2.0.11 | 0BSD | `htmx-2.0.11/LICENSE` |
 | [Leaflet](https://github.com/Leaflet/Leaflet) | 1.9.4 | BSD-2-Clause | `leaflet-1.9.4/LICENSE` |
 
+## NuGet packages
+
+| Package | License |
+|---|---|
+| [PdfPig](https://github.com/UglyToad/PdfPig) | Apache-2.0 |
+| [ExcelDataReader](https://github.com/ExcelDataReader/ExcelDataReader) | MIT |
+| Microsoft.* (EF Core, ASP.NET Core, extensions) | MIT |
+
 ## Data
 
 - Construction permits, urbanism certificates, completion certificates and the street nomenclator are published
   by **Primăria Municipiului Cluj-Napoca** on [data.gov.ro](https://data.gov.ro/organization/primaria-municipiului-cluj-napoca)
   under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The test fixtures in
   `tests/ClujImo.Infrastructure.Tests/Fixtures/` are short excerpts of those files.
+- Public procurement contracts (SICAP exports) are published on data.gov.ro by the Agenția pentru Agenda
+  Digitală a României under CC BY 4.0.
+- Housing statistics: Institutul Național de Statistică, TEMPO-Online (matrices LOC101B, LOC104B, LOC108B).
+- PUZ/PUD intent tables and Local Council decisions are read from primariaclujnapoca.ro. Names of private
+  persons are not stored.
 - Map tiles and geocoding: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL, via
-  [Nominatim](https://nominatim.org/), subject to the
+  [Nominatim](https://nominatim.org/) and the [Overpass API](https://overpass-api.de/), subject to the
   [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/) and the
   [tile usage policy](https://operations.osmfoundation.org/policies/tiles/).

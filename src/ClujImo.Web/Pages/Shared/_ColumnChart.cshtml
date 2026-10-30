@@ -1,0 +1,35 @@
+@model ColumnChart
+<svg class="chart" viewBox="0 0 @ColumnChart.Width @ColumnChart.Height" role="img" aria-label="@Model.FirstName pe luni">
+    @foreach (var (y, value) in Model.GridLines)
+    {
+        <g>
+            <line class="grid-line" x1="@ColumnChart.Left" x2="@(ColumnChart.Width - ColumnChart.Right)" y1="@Format.Invariant(y)" y2="@Format.Invariant(y)" />
+            <text class="axis-label" x="@(ColumnChart.Left - 6)" y="@Format.Invariant(y + 4)" text-anchor="end">@Format.Compact(value * Model.Multiplier)</text>
+        </g>
+    }
+    @foreach (var c in Model.Columns)
+    {
+        <g>
+            <rect class="column first" x="@Format.Invariant(c.X)" y="@Format.Invariant(c.FirstY)" width="@Format.Invariant(Model.BarWidth)" height="@Format.Invariant(Math.Max(0, c.FirstHeight))" rx="2">
+                <title>@Labels.Months[c.Month - 1] @c.Year: @Model.FirstName @Model.Label(c.First)@(Model.SecondName is null ? "" : $", {Model.SecondName} {c.Second}")</title>
+            </rect>
+            @if (Model.SecondName is not null && c.Second > 0)
+            {
+                <rect class="column second" x="@Format.Invariant(c.X)" y="@Format.Invariant(c.SecondY)" width="@Format.Invariant(Model.BarWidth)" height="@Format.Invariant(Math.Max(0, c.SecondHeight - 1))" rx="2">
+                    <title>@Labels.Months[c.Month - 1] @c.Year: @Model.SecondName @c.Second</title>
+                </rect>
+            }
+            @if (c.LabelMonth)
+            {
+                <g><text class="axis-label" x="@Format.Invariant(c.X)" y="@(ColumnChart.Height - 8)">@c.Year</text></g>
+            }
+        </g>
+    }
+</svg>
+<div class="legend" aria-hidden="true">
+    <span><span class="swatch column-first"></span>@Model.FirstName</span>
+    @if (Model.SecondName is not null)
+    {
+        <span><span class="swatch column-second"></span>@Model.SecondName</span>
+    }
+</div>

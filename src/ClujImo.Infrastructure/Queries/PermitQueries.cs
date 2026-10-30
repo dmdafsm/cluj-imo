@@ -1,5 +1,5 @@
-using ClujImo.Domain.Addresses;
 using ClujImo.Domain.Classification;
+using ClujImo.Domain.Geo;
 using ClujImo.Domain.Permits;
 using ClujImo.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -119,42 +119,38 @@ public sealed class PermitQueries(AppDbContext db)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-    public async Task<IReadOnlyList<MapPoint>> GetMapPointsAsync(PermitFilter filter, CancellationToken cancellationToken)
+    /// <summary>
+    /// Permits at their own coordinates; records sharing a spot (same address, or street-level placement) are
+    /// clustered so the map shows one marker with a list.
+    /// </summary>
+    public async Task<IReadOnlyList<MapCluster>> GetMapClustersAsync(PermitFilter filter, CancellationToken cancellationToken)
     {
-        var groups = await Permits.Apply(filter)
-            .Where(p => p.StreetKey != null)
-            .Join(db.Streets.AsNoTracking().Where(s => s.GeocodeStatus == GeocodeStatus.Found), p => p.StreetKey, s => s.Key, (p, s) => new { p, s })
-            .GroupBy(x => new { x.s.Name, x.s.Latitude, x.s.Longitude, x.s.Neighborhood, x.p.Category })
-            .Select(g => new
+        var rows = await Permits.Apply(filter)
+            .Where(p => p.Latitude != null && p.Longitude != null)
+            .Select(p => new
             {
-                g.Key.Name,
-                g.Key.Latitude,
-                g.Key.Longitude,
-                g.Key.Neighborhood,
-                g.Key.Category,
-                Count = g.Count(),
-                NewBuilds = g.Count(x => x.p.IsNewBuild),
-                Units = g.Sum(x => x.p.IsNewBuild ? x.p.Units ?? 0 : 0),
+                p.Id, p.Kind, p.Year, p.Number, p.Latitude, p.Longitude, p.GeoPrecision, p.StreetDisplay, p.HouseNumber,
+                p.Category, p.IsNewBuild, p.Units,
             })
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        return [.. groups
-            .GroupBy(g => g.Name)
-            .Select(g =>
-            {
-                var first = g.First();
-                return new MapPoint(
-                    g.Key,
-                    first.Latitude!.Value,
-                    first.Longitude!.Value,
-                    g.Sum(x => x.Count),
-                    g.Sum(x => x.NewBuilds),
-                    g.Sum(x => x.Units),
-                    g.OrderByDescending(x => x.Count).First().Category,
-                    first.Neighborhood);
-            })
-            .OrderByDescending(p => p.Count)];
+        return [.. rows
+            .GroupBy(r => (Math.Round(r.Latitude!.Value, 5), Math.Round(r.Longitude!.Value, 5)))
+            .Select(g => new MapCluster(
+                g.Key.Item1,
+                g.Key.Item2,
+                g.Count(),
+                g.Count(r => r.IsNewBuild),
+                g.Sum(r => r.IsNewBuild ? r.Units ?? 0 : 0),
+                g.GroupBy(r => r.Category).OrderByDescending(c => c.Count()).First().Key,
+                g.Max(r => r.GeoPrecision),
+                g.First().GeoPrecision >= GeoPrecision.NearbyNumber
+                    ? $"{g.First().StreetDisplay} {g.First().HouseNumber}".Trim()
+                    : g.First().StreetDisplay ?? string.Empty,
+                [.. g.OrderByDescending(r => r.IsNewBuild).ThenByDescending(r => r.Year).Take(6)
+                    .Select(r => new MapItem(r.Id, $"{r.Number}/{r.Year}", r.Category.ToString()))]))
+            .OrderByDescending(c => c.Count)];
     }
 
     public async Task<Page<PermitRow>> SearchAsync(PermitFilter filter, int page, int pageSize, CancellationToken cancellationToken)
@@ -220,15 +216,20 @@ public sealed class PermitQueries(AppDbContext db)
             .Take(take)];
     }
 
-    public async Task<IngestionRun?> GetLastRunAsync(CancellationToken cancellationToken) =>
-        await db.IngestionRuns.AsNoTracking().OrderByDescending(r => r.Id).FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+    public async Task<(int Total, int Placed, int Exact)> GetPlacementStatusAsync(CancellationToken cancellationToken)
+    {
+        var permits = Permits.Where(p => p.Kind != PermitKind.CompletionCertificate);
+        return (await permits.CountAsync(cancellationToken).ConfigureAwait(false),
+            await permits.CountAsync(p => p.Latitude != null, cancellationToken).ConfigureAwait(false),
+            await permits.CountAsync(p => p.GeoPrecision == GeoPrecision.Address, cancellationToken).ConfigureAwait(false));
+    }
 
     public async Task<(int Total, int Found, int Pending)> GetGeocodeStatusAsync(CancellationToken cancellationToken)
     {
         var used = Permits.Where(p => p.StreetKey != null).Select(p => p.StreetKey).Distinct();
         var streets = db.Streets.AsNoTracking().Where(s => used.Contains(s.Key));
         return (await streets.CountAsync(cancellationToken).ConfigureAwait(false),
-            await streets.CountAsync(s => s.GeocodeStatus == GeocodeStatus.Found, cancellationToken).ConfigureAwait(false),
-            await streets.CountAsync(s => s.GeocodeStatus == GeocodeStatus.Pending, cancellationToken).ConfigureAwait(false));
+            await streets.CountAsync(s => s.GeocodeStatus == Domain.Addresses.GeocodeStatus.Found, cancellationToken).ConfigureAwait(false),
+            await streets.CountAsync(s => s.GeocodeStatus == Domain.Addresses.GeocodeStatus.Pending, cancellationToken).ConfigureAwait(false));
     }
 }

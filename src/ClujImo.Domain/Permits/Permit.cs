@@ -1,4 +1,5 @@
 using ClujImo.Domain.Classification;
+using ClujImo.Domain.Geo;
 
 namespace ClujImo.Domain.Permits;
 
@@ -40,6 +41,12 @@ public sealed class Permit
     public bool IsZone { get; set; }
 
     public string? Neighborhood { get; set; }
+
+    public double? Latitude { get; set; }
+
+    public double? Longitude { get; set; }
+
+    public GeoPrecision GeoPrecision { get; set; }
 
     public WorkCategory Category { get; set; }
 
