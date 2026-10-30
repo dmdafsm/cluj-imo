@@ -1,0 +1,23 @@
+@page "/harta"
+@model MapModel
+@{
+    ViewData["Title"] = "Hartă";
+    ViewData["Target"] = "#map-data";
+}
+@section Head {
+    <link rel="stylesheet" href="~/lib/leaflet-1.9.4/leaflet.css" />
+}
+<h5>Unde se construiește</h5>
+<p class="secondary-text">Fiecare cerc este o stradă: mărimea arată numărul de documente, culoarea plină arată construcții noi. Poziția e la nivel de stradă, nu de imobil.</p>
+
+<partial name="_Filters" model="Model" view-data="ViewData" />
+
+<div id="map" class="medium-margin" role="region" aria-label="Hartă cu străzile cu lucrări"></div>
+<div id="map-data">
+    <partial name="_MapResults" model="Model" />
+</div>
+
+@section Scripts {
+    <script src="~/lib/leaflet-1.9.4/leaflet.js"></script>
+    <script src="~/js/map.js" asp-append-version="true"></script>
+}

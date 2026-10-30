@@ -1,0 +1,15 @@
+@page "/autorizatii"
+@model PermitsModel
+@{
+    ViewData["Title"] = "Explorează";
+    ViewData["Target"] = "#results";
+    ViewData["ShowSearch"] = true;
+}
+<h5>Explorează documentele</h5>
+<p class="secondary-text">Toate rândurile din seturile de date, cu clasificarea și regimul de înălțime extrase automat.</p>
+
+<partial name="_Filters" model="Model" view-data="ViewData" />
+
+<div id="results" class="dim">
+    <partial name="_PermitsResults" model="Model" />
+</div>

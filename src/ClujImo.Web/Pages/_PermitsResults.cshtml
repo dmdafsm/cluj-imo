@@ -1,0 +1,61 @@
+@model PermitsModel
+@{
+    var r = Model.Results;
+}
+<p class="small-text secondary-text">@Format.Number(r.TotalCount) rezultate · pagina @r.PageNumber din @r.PageCount</p>
+@if (r.Items.Count == 0)
+{
+    <article class="round border center-align">
+        <i class="extra">search_off</i>
+        <p>Nimic nu se potrivește filtrelor alese.</p>
+    </article>
+}
+else
+{
+    <div class="scroll-x">
+        <table class="zebra small-text">
+            <thead>
+                <tr>
+                    <th>Nr. / dată</th>
+                    <th>Adresă</th>
+                    <th>Lucrare</th>
+                    <th>Regim</th>
+                    <th class="num">Unități</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in r.Items)
+                {
+                    <tr class="clickable" onclick="location.href='/autorizatii/@p.Id'">
+                        <td class="nowrap">
+                            <div><a class="link" href="/autorizatii/@p.Id">@Labels.Abbreviation(p.Kind) @p.Number/@p.Year</a></div>
+                            <div class="secondary-text">@Format.Date(p.IssuedOn)</div>
+                        </td>
+                        <td>
+                            <div>@(p.Street ?? "—") @p.HouseNumber</div>
+                            @if (p.Neighborhood is not null)
+                            {
+                                <div class="secondary-text">@p.Neighborhood</div>
+                            }
+                        </td>
+                        <td>
+                            <span class="chip tiny round @(p.Category.IsNewBuild() ? "primary-container" : "")"><i class="tiny">@Labels.Icon(p.Category)</i><span>@Labels.For(p.Category)</span></span>
+                            <div class="description">@p.Description</div>
+                        </td>
+                        <td>@(p.HeightRegime ?? "—")</td>
+                        <td class="num">@(p.Units?.ToString() ?? "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <nav class="center-align medium-margin">
+        <button class="border round" disabled="@(!r.HasPrevious)" hx-get="@Model.PageUrl(r.PageNumber - 1)" hx-target="#results" hx-push-url="true" aria-label="Pagina anterioară">
+            <i>chevron_left</i>
+        </button>
+        <span>@r.PageNumber / @r.PageCount</span>
+        <button class="border round" disabled="@(!r.HasNext)" hx-get="@Model.PageUrl(r.PageNumber + 1)" hx-target="#results" hx-push-url="true" aria-label="Pagina următoare">
+            <i>chevron_right</i>
+        </button>
+    </nav>
+}

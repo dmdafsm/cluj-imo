@@ -1,0 +1,40 @@
+@model DataModel
+@{
+    var run = Model.LastRun;
+    var geo = Model.Geocoding;
+    var geoPercent = geo.Total > 0 ? 100.0 * (geo.Total - geo.Pending) / geo.Total : 0;
+}
+<article class="round surface-container"
+         @if (Model.IsRunning || geo.Pending > 0) { <text>hx-get="/date" hx-trigger="every 5s" hx-target="#status" hx-swap="innerHTML"</text> }>
+    <nav class="wrap">
+        <div class="max">
+            <h6 class="no-margin">Actualizare</h6>
+            @if (Model.IsRunning)
+            {
+                <p class="no-margin"><progress class="circle small"></progress> Se descarcă datele de pe data.gov.ro…</p>
+            }
+            else if (run is null)
+            {
+                <p class="no-margin">Încă nicio actualizare.</p>
+            }
+            else
+            {
+                <p class="no-margin">
+                    Ultima: @run.StartedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm", System.Globalization.CultureInfo.GetCultureInfo("ro-RO"))
+                    · @(run.Succeeded ? "reușită" : "eșuată")
+                    · @Format.Number(run.RowsRead) rânduri citite, @Format.Number(run.RowsInserted) noi, @Format.Number(run.RowsUpdated) modificate
+                </p>
+                @if (run.Error is not null)
+                {
+                    <p class="error-text small-text">@run.Error</p>
+                }
+            }
+        </div>
+        <button class="round" hx-post="/date?handler=Refresh" hx-target="#status" disabled="@Model.IsRunning">
+            <i>sync</i><span>Actualizează acum</span>
+        </button>
+    </nav>
+    <div class="space"></div>
+    <div class="small-text">Geolocalizare străzi: @geo.Found găsite din @geo.Total folosite (@geo.Pending în așteptare, ~1 pe secundă)</div>
+    <progress value="@Format.Invariant(geoPercent)" max="100" aria-label="Progres geolocalizare"></progress>
+</article>

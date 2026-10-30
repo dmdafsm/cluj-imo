@@ -1,0 +1,6 @@
+@model MapModel
+<script type="application/json" id="map-points">@Html.Raw(Model.PointsJson)</script>
+<p class="small-text secondary-text">
+    @Model.Points.Count străzi geolocalizate · @Format.Number(Model.Points.Sum(p => p.Count)) documente
+    · <a class="link" href="/date">stadiul geolocalizării</a>
+</p>

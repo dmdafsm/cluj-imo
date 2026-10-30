@@ -1,0 +1,38 @@
+@page
+@model DashboardModel
+@{
+    ViewData["Title"] = "Sumar";
+    ViewData["Target"] = "#results";
+}
+<h5>Ce se construiește în Cluj</h5>
+<p class="secondary-text">Autorizații, certificate de urbanism și certificate de atestare emise de Primăria Cluj-Napoca, clasificate automat după descrierea lucrării.</p>
+
+<partial name="_Filters" model="Model" view-data="ViewData" />
+
+<div id="results" class="dim">
+    <partial name="_DashboardResults" model="Model" />
+</div>
+
+@if (Model.Pipeline.Count > 0)
+{
+    <article class="round border">
+        <h6><i>trending_up</i> Ce urmează: locuințe colective în ultimele 12 luni</h6>
+        <p class="secondary-text small-text">Certificatele de urbanism arată intenția (cu luni înainte de autorizație); atestările arată clădiri terminate. Un raport mare CU / AC indică un val de proiecte în pregătire.</p>
+        <div class="scroll-x">
+            <table class="zebra">
+                <thead><tr><th>Cartier</th><th class="num">CU</th><th class="num">AC</th><th class="num">Atestări</th></tr></thead>
+                <tbody>
+                    @foreach (var row in Model.Pipeline)
+                    {
+                        <tr>
+                            <td><a class="link" href="/autorizatii?tip=UrbanismCertificate&grup=Collective&cartier=@Uri.EscapeDataString(row.Neighborhood)">@row.Neighborhood</a></td>
+                            <td class="num">@row.Certificates</td>
+                            <td class="num">@row.Permits</td>
+                            <td class="num">@row.Completions</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </article>
+}

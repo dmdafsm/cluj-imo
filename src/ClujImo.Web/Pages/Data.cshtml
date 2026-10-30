@@ -1,0 +1,33 @@
+@page "/date"
+@model DataModel
+@{
+    ViewData["Title"] = "Date";
+}
+<h5>Despre date</h5>
+
+<div id="status">
+    <partial name="_DataStatus" model="Model" />
+</div>
+
+<article class="round border">
+    <h6>Surse</h6>
+    <ul class="list border">
+        <li><i>assignment</i><div class="max"><a class="link" href="https://data.gov.ro/dataset/autorizatii_construire" target="_blank" rel="noopener">Autorizații de construire</a><div class="small-text secondary-text">Ce s-a aprobat pentru execuție.</div></div></li>
+        <li><i>draft</i><div class="max"><a class="link" href="https://data.gov.ro/dataset/certificate_urbanism" target="_blank" rel="noopener">Certificate de urbanism</a><div class="small-text secondary-text">Intenția: primul pas înainte de proiect și autorizație.</div></div></li>
+        <li><i>task_alt</i><div class="max"><a class="link" href="https://data.gov.ro/dataset/certificat_atestare" target="_blank" rel="noopener">Certificate de atestare a edificării</a><div class="small-text secondary-text">Construcții terminate. În anii recenți setul conține doar cartierul, nu adresa.</div></div></li>
+        <li><i>signpost</i><div class="max"><a class="link" href="https://data.gov.ro/dataset/nomenclatorul-stradal-al-municipiului-cluj-napoca" target="_blank" rel="noopener">Nomenclatorul stradal</a><div class="small-text secondary-text">Numele oficiale și zona fiscală a străzilor.</div></div></li>
+        <li><i>public</i><div class="max"><a class="link" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap / Nominatim</a><div class="small-text secondary-text">Coordonate și cartier pentru fiecare stradă (nu pentru fiecare imobil).</div></div></li>
+    </ul>
+</article>
+
+<p class="small-text secondary-text">Date: Primăria Municipiului Cluj-Napoca, licență <a class="link" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Hărți: © OpenStreetMap contributors.</p>
+
+<article class="round border">
+    <h6>Limitări</h6>
+    <ul>
+        <li>Clasificarea se face pe baza textului descrierii, cu reguli; poate greși pe descrieri neobișnuite.</li>
+        <li>Numărul de unități și regimul de înălțime apar doar când sunt scrise în descriere.</li>
+        <li>Seturile nu conțin suprafețe, valori de investiție sau beneficiari.</li>
+        <li>Anul curent e incomplet; comparațiile folosesc aceeași perioadă din anul anterior.</li>
+    </ul>
+</article>

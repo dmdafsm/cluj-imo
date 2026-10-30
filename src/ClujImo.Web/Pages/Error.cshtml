@@ -1,0 +1,14 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Eroare";
+}
+<article class="round border center-align">
+    <i class="extra">error</i>
+    <h5>Ceva n-a mers</h5>
+    <p>Încearcă din nou. Dacă problema persistă, verifică jurnalul aplicației.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="small-text secondary-text">Cerere: <code>@Model.RequestId</code></p>
+    }
+</article>

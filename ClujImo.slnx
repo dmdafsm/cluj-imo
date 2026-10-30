@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ClujImo.Domain/ClujImo.Domain.csproj" />
+    <Project Path="src/ClujImo.Infrastructure/ClujImo.Infrastructure.csproj" />
+    <Project Path="src/ClujImo.Web/ClujImo.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ClujImo.Domain.Tests/ClujImo.Domain.Tests.csproj" />
+    <Project Path="tests/ClujImo.Infrastructure.Tests/ClujImo.Infrastructure.Tests.csproj" />
+  </Folder>
+</Solution>

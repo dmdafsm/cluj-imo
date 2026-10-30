@@ -1,0 +1,62 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var token = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+    var path = Context.Request.Path.Value ?? "/";
+    string Active(string prefix) => (prefix == "/" ? path == "/" : path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) ? "active" : "";
+    var links = new[]
+    {
+        (Href: "/", Icon: "dashboard", Text: "Sumar"),
+        (Href: "/harta", Icon: "map", Text: "Hartă"),
+        (Href: "/autorizatii", Icon: "table_rows", Text: "Explorează"),
+        (Href: "/date", Icon: "database", Text: "Date"),
+    };
+}
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="google" content="notranslate" />
+    <title>@ViewData["Title"] · Cluj Imo</title>
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/lib/beercss-5.0.3/beer.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Head", required: false)
+    <script type="module" src="~/lib/beercss-5.0.3/beer.min.js"></script>
+    <script type="module" src="~/lib/beercss-5.0.3/material-dynamic-colors.min.js"></script>
+    <script src="~/lib/htmx-2.0.11/htmx.min.js"></script>
+    <script type="module" src="~/js/theme.js" asp-append-version="true"></script>
+</head>
+<body class="light" hx-headers='{"RequestVerificationToken": "@token"}'>
+    <nav class="left m l">
+        <header>
+            <img src="~/favicon.svg" alt="" class="logo" />
+        </header>
+        @foreach (var link in links)
+        {
+            <a href="@link.Href" class="@Active(link.Href)"><i>@link.Icon</i><span>@link.Text</span></a>
+        }
+    </nav>
+    <nav class="bottom s">
+        @foreach (var link in links)
+        {
+            <a href="@link.Href" class="@Active(link.Href)"><i>@link.Icon</i><span>@link.Text</span></a>
+        }
+    </nav>
+    <header class="app-bar">
+        <nav>
+            <div class="max">
+                <h6 class="no-margin">Cluj Imo</h6>
+                <span class="small-text secondary-text">Ce se construiește în Cluj-Napoca · date deschise data.gov.ro</span>
+            </div>
+            <button class="circle transparent" id="theme-toggle" aria-label="Schimbă tema luminoasă / întunecată">
+                <i>dark_mode</i>
+            </button>
+        </nav>
+    </header>
+    <main class="responsive">
+        @RenderBody()
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

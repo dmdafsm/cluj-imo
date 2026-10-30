@@ -1,0 +1,41 @@
+[
+ {
+  "denumire": "Aleea Albăstrelelor",
+  "den_veche": "",
+  "act_constitutiv": "HCL nr.333/11.07.2013",
+  "obs": "",
+  "zona_fiscala": {
+   "D": {
+    "data_end": "31.12.2099",
+    "interval": "integral",
+    "amplasare": "Cartier Borhanci-sud"
+   }
+  }
+ },
+ {
+  "denumire": "Aleea Alexandru Lapedatu",
+  "den_veche": "",
+  "act_constitutiv": "Hcl nr. 423/29.11.2011",
+  "obs": "",
+  "zona_fiscala": {
+   "D": {
+    "data_end": "31.12.2099",
+    "interval": "integral",
+    "amplasare": ""
+   }
+  }
+ },
+ {
+  "denumire": "Aleea Anemonelor",
+  "den_veche": "",
+  "act_constitutiv": "HCL nr. 343/22.12.2014 ",
+  "obs": "PUZ Sopor HCL 39/2013",
+  "zona_fiscala": {
+   "D": {
+    "data_end": "31.12.2099",
+    "interval": "integral",
+    "amplasare": "PUZ Sopor La Eperiş"
+   }
+  }
+ }
+]

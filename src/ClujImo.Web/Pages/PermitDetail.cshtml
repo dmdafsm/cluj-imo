@@ -1,0 +1,53 @@
+@page "/autorizatii/{id:int}"
+@model PermitDetailModel
+@{
+    var p = Model.Permit;
+    ViewData["Title"] = $"{Labels.Abbreviation(p.Kind)} {p.Number}/{p.Year}";
+}
+<nav>
+    <a class="button circle transparent" href="javascript:history.back()" aria-label="Înapoi"><i>arrow_back</i></a>
+    <h5 class="max">@Labels.Abbreviation(p.Kind) nr. @p.Number / @p.Year</h5>
+</nav>
+
+<div class="grid">
+    <article class="s12 l8 round border">
+        <span class="chip round @(p.Category.IsNewBuild() ? "primary-container" : "")"><i>@Labels.Icon(p.Category)</i><span>@Labels.For(p.Category)</span></span>
+        @if (p.IsContinuation) { <span class="chip round">Continuare lucrări</span> }
+        @if (p.IsAmendment) { <span class="chip round">Modificare de temă / pe parcurs</span> }
+        @if (p.IncludesDemolition) { <span class="chip round">Include desființare</span> }
+        @if (p.IsUrbanPlan) { <span class="chip round">PUZ / PUD</span> }
+        <h6>Descriere</h6>
+        <p>@p.Description</p>
+    </article>
+    <article class="s12 l4 round surface-container">
+        <ul class="list">
+            <li><i>event</i><div class="max"><div class="small-text secondary-text">Emis</div><div>@Format.Date(p.IssuedOn)</div></div></li>
+            <li><i>edit_calendar</i><div class="max"><div class="small-text secondary-text">Cerere</div><div>@Format.Date(p.RequestedOn) @(p.RequestNumber is null ? "" : $"(nr. {p.RequestNumber})")</div></div></li>
+            @if (p.ProcessingDays is { } days)
+            {
+                <li><i>timer</i><div class="max"><div class="small-text secondary-text">Durată</div><div>@days zile</div></div></li>
+            }
+            <li><i>location_on</i><div class="max"><div class="small-text secondary-text">Adresă @(p.IsZone ? "(în zona)" : "")</div><div>@(p.StreetDisplay ?? "—") @p.HouseNumber</div><div class="small-text">@p.Neighborhood</div></div></li>
+            <li><i>height</i><div class="max"><div class="small-text secondary-text">Regim de înălțime</div><div>@(p.HeightRegime ?? "—") @(p.LevelsAboveGround is { } l ? $"· {l} niveluri supraterane" : "")</div></div></li>
+            <li><i>door_front</i><div class="max"><div class="small-text secondary-text">Unități locative</div><div>@(p.Units?.ToString() ?? "—")</div></div></li>
+            @if (p.ReferencedPermitNumber is not null)
+            {
+                <li><i>link</i><div class="max"><div class="small-text secondary-text">Autorizația atestată</div><div>AC @p.ReferencedPermitNumber din @Format.Date(p.ReferencedPermitDate)</div></div></li>
+            }
+        </ul>
+    </article>
+    @if (Model.Completions.Count > 0)
+    {
+        <article class="s12 round primary-container">
+            <h6><i>task_alt</i> Construcție atestată ca finalizată</h6>
+            @foreach (var c in Model.Completions)
+            {
+                <p><a class="link" href="/autorizatii/@c.Id">Certificat de atestare nr. @c.Number/@c.Year</a> · @c.Neighborhood</p>
+            }
+        </article>
+    }
+    <article class="s12 round border">
+        <h6 class="small">Date brute</h6>
+        <p class="small-text secondary-text">@p.RawAddress</p>
+    </article>
+</div>

@@ -1,0 +1,63 @@
+@model FilteredPageModel
+@{
+    var target = (string)ViewData["Target"]!;
+    var showSearch = ViewData["ShowSearch"] is true;
+    var showKind = ViewData["ShowKind"] is not false;
+}
+<form class="filters" hx-get="@Context.Request.Path" hx-target="@target" hx-push-url="true"
+      hx-trigger="change, input from:#q delay:400ms, submit" hx-indicator="@target" role="search" aria-label="Filtre">
+    @if (showKind)
+    {
+        <div class="field label suffix border round small">
+            <select name="tip" id="tip">
+                @foreach (var kind in Enum.GetValues<PermitKind>())
+                {
+                    <option value="@kind" selected="@(Model.Kind == kind)">@Labels.Compact(kind)</option>
+                }
+            </select>
+            <label for="tip">Sursă</label>
+            <i>arrow_drop_down</i>
+        </div>
+    }
+    <div class="field label suffix border round small">
+        <select name="an" id="an">
+            <option value="" selected="@(Model.Year is null)">Toți anii</option>
+            @foreach (var year in Model.Years)
+            {
+                <option value="@year" selected="@(Model.Year == year)">@year</option>
+            }
+        </select>
+        <label for="an">An</label>
+        <i>arrow_drop_down</i>
+    </div>
+    <div class="field label suffix border round small">
+        <select name="grup" id="grup">
+            @foreach (var group in Enum.GetValues<CategoryGroup>())
+            {
+                <option value="@group" selected="@(Model.Group == group)">@Labels.For(group)</option>
+            }
+        </select>
+        <label for="grup">Tip lucrare</label>
+        <i>arrow_drop_down</i>
+    </div>
+    <div class="field label suffix border round small">
+        <select name="cartier" id="cartier">
+            <option value="" selected="@string.IsNullOrEmpty(Model.Neighborhood)">Tot orașul</option>
+            @foreach (var name in Model.Neighborhoods)
+            {
+                <option value="@name" selected="@(Model.Neighborhood == name)">@name</option>
+            }
+        </select>
+        <label for="cartier">Cartier</label>
+        <i>arrow_drop_down</i>
+    </div>
+    @if (showSearch)
+    {
+        <div class="field label prefix border round small search">
+            <i>search</i>
+            <input type="search" name="q" id="q" value="@Model.Search" autocomplete="off" placeholder=" " />
+            <label for="q">Caută stradă, lucrare, număr</label>
+        </div>
+    }
+    <noscript><button type="submit">Aplică</button></noscript>
+</form>

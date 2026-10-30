@@ -1,0 +1,111 @@
+@model DashboardModel
+@{
+    var k = Model.Kpis;
+    var totalChange = Format.Change(k.Total, k.PreviousPeriodTotal);
+    var collectiveChange = Format.Change(k.NewCollective, k.PreviousPeriodNewCollective);
+    var maxCategory = Model.Categories.Count > 0 ? Model.Categories.Max(c => c.Count) : 1;
+    var query = Context.Request.QueryString.Value;
+}
+<div class="grid">
+    <article class="s6 m3 kpi round surface-container">
+        <div class="label small-text">@Labels.Abbreviation(Model.Kind) emise</div>
+        <div class="value">@Format.Number(k.Total)</div>
+        @if (totalChange is not null)
+        {
+            <div class="small-text delta @(k.Total >= k.PreviousPeriodTotal ? "up" : "down")">@totalChange față de aceeași perioadă din @(Model.Year - 1)</div>
+        }
+    </article>
+    <article class="s6 m3 kpi round surface-container">
+        <div class="label small-text">Construcții noi</div>
+        <div class="value">@Format.Number(k.NewBuilds)</div>
+        <div class="small-text secondary-text">@Format.Number(k.Demolitions) implică desființări</div>
+    </article>
+    <article class="s6 m3 kpi round primary-container">
+        <div class="label small-text">Blocuri / clădiri mixte noi</div>
+        <div class="value">@Format.Number(k.NewCollective)</div>
+        @if (collectiveChange is not null)
+        {
+            <div class="small-text delta @(k.NewCollective >= k.PreviousPeriodNewCollective ? "up" : "down")">@collectiveChange față de anul trecut</div>
+        }
+    </article>
+    <article class="s6 m3 kpi round surface-container">
+        <div class="label small-text">Unități locative menționate</div>
+        <div class="value">@Format.Number(k.Units)</div>
+        <div class="small-text secondary-text">
+            @if (k.MedianProcessingDays is { } days)
+            {
+                <span>Mediană cerere → emitere: <strong>@days zile</strong></span>
+            }
+        </div>
+    </article>
+</div>
+
+<article class="round border">
+    <nav>
+        <h6 class="max">Ritm lunar · @Labels.For(Model.Kind)</h6>
+        <span class="small-text secondary-text">date până la @Format.Date(k.DataUntil)</span>
+    </nav>
+    <partial name="_LineChart" model="Model.Monthly" />
+</article>
+
+<div class="grid">
+    <article class="s12 l6 round border">
+        <h6>Ce fel de lucrări</h6>
+        <div class="bars">
+            @foreach (var c in Model.Categories)
+            {
+                <div class="bar-row">
+                    <span class="name"><i class="small">@Labels.Icon(c.Category)</i>@Labels.For(c.Category)</span>
+                    <span class="bar-track"><span class="bar-fill @(c.Category.IsNewBuild() ? "" : "muted")" style="width:@Format.Invariant(100.0 * c.Count / maxCategory)%"></span></span>
+                    <span class="count">@Format.Number(c.Count)</span>
+                </div>
+            }
+        </div>
+    </article>
+    <article class="s12 l6 round border">
+        <h6>Cartiere cu cele mai multe construcții noi</h6>
+        @if (Model.TopNeighborhoods.Count == 0)
+        {
+            <p class="secondary-text">Cartierele apar pe măsură ce străzile sunt geolocalizate (vezi pagina Date).</p>
+        }
+        else
+        {
+            <table class="zebra small-text">
+                <thead><tr><th>Cartier</th><th class="num">Noi</th><th class="num">Unități</th><th class="num">Total</th></tr></thead>
+                <tbody>
+                    @foreach (var a in Model.TopNeighborhoods)
+                    {
+                        <tr>
+                            <td><a class="link" href="/autorizatii?tip=@Model.Kind&an=@Model.Year&cartier=@Uri.EscapeDataString(a.Name)">@a.Name</a></td>
+                            <td class="num">@a.NewBuilds</td>
+                            <td class="num">@(a.Units > 0 ? Format.Number(a.Units) : "—")</td>
+                            <td class="num">@a.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </article>
+    <article class="s12 round border">
+        <nav>
+            <h6 class="max">Străzi fierbinți</h6>
+            <a class="button border small round" href="/harta@(query)"><i>map</i><span>Vezi pe hartă</span></a>
+        </nav>
+        <div class="scroll-x">
+            <table class="zebra small-text">
+                <thead><tr><th>Stradă</th><th class="num">Construcții noi</th><th class="num">Unități</th><th class="num">Total</th></tr></thead>
+                <tbody>
+                    @foreach (var a in Model.TopStreets)
+                    {
+                        <tr>
+                            <td><a class="link" href="/autorizatii?tip=@Model.Kind&an=@Model.Year&q=@Uri.EscapeDataString(a.Name)">@a.Name</a></td>
+                            <td class="num">@a.NewBuilds</td>
+                            <td class="num">@(a.Units > 0 ? Format.Number(a.Units) : "—")</td>
+                            <td class="num">@a.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </article>
+</div>

@@ -1,0 +1,31 @@
+@model LineChart
+<svg class="chart" viewBox="0 0 @LineChart.Width @LineChart.Height" role="img" aria-label="Număr de documente emise pe lună, comparat pe ani">
+    @foreach (var (y, value) in Model.GridLines)
+    {
+        <g>
+        <line class="grid-line" x1="@LineChart.Left" x2="@(LineChart.Width - LineChart.Right)" y1="@Format.Invariant(y)" y2="@Format.Invariant(y)" />
+        <text class="axis-label" x="@(LineChart.Left - 8)" y="@Format.Invariant(y + 4)" text-anchor="end">@value</text>
+        </g>
+    }
+    @for (var month = 1; month <= 12; month++)
+    {
+        <g><text class="axis-label" x="@Format.Invariant(LineChart.X(month))" y="@(LineChart.Height - 8)" text-anchor="middle">@Labels.Months[month - 1]</text></g>
+    }
+    @foreach (var series in Model.Lines.OrderBy(s => s.Role == LineChart.SeriesRole.Focus ? 2 : s.Role == LineChart.SeriesRole.Previous ? 1 : 0))
+    {
+        <path class="series @series.Role.ToString().ToLowerInvariant()" d="@series.Path"><title>@series.Year</title></path>
+        @if (series.Role == LineChart.SeriesRole.Focus)
+        {
+            foreach (var point in series.Points)
+            {
+                <circle class="dot" cx="@Format.Invariant(point.X)" cy="@Format.Invariant(point.Y)" r="4"><title>@Labels.Months[point.Month - 1] @series.Year: @point.Value</title></circle>
+            }
+        }
+    }
+</svg>
+<div class="legend" aria-hidden="true">
+    @foreach (var series in Model.Lines.OrderByDescending(s => s.Year))
+    {
+        <span><span class="swatch @series.Role.ToString().ToLowerInvariant()"></span>@series.Year</span>
+    }
+</div>

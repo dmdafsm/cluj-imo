@@ -1,0 +1,19 @@
+services:
+  web:
+    build: .
+    image: cluj-imo:latest
+    ports:
+      - "${CLUJ_IMO_PORT:-8080}:8080"
+    volumes:
+      - data:/data
+    environment:
+      # Re-download everything once a day; an empty database is always filled on start.
+      OpenData__RefreshInterval: "1.00:00:00"
+      OpenData__RefreshOnStartup: "false"
+      # Street geocoding via OpenStreetMap Nominatim (~1 request/second). Put a contact in the User-Agent.
+      Geocoding__Enabled: "true"
+      Geocoding__UserAgent: "cluj-imo/1.0 (self-hosted open-data dashboard)"
+    restart: unless-stopped
+
+volumes:
+  data:
